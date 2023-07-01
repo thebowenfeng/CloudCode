@@ -9,6 +9,7 @@ class DockerBridge(val host: String, val port: Int, val containerId: String) {
     private val socket = Socket(host, port)
     private val output = socket.getOutputStream()
     private val input = socket.getInputStream()
+    val created = System.currentTimeMillis()
     var lastInteracted = System.currentTimeMillis()
 
     init {

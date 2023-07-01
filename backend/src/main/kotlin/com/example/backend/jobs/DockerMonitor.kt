@@ -19,6 +19,8 @@ class DockerMonitor @Autowired constructor(
 ) {
     private val client: HttpHandler = ApacheClient()
     private val host: String = System.getenv("CODECLOUD_DOCKER_HOST")
+    private val MAX_AFK_TIME = 60000
+    private val MAX_LIFETIME = 600000
     @Scheduled(fixedRate = 1000)
     fun pruneSessions(){
         val listContainersReq = client(Request(Method.GET, "http://$host:4243/containers/json"))
@@ -44,7 +46,10 @@ class DockerMonitor @Autowired constructor(
 
     @Scheduled(fixedRate = 1000)
     fun pruneStaleSessions(){
-        val staleSessions = session.sessionMap.filter { System.currentTimeMillis() - it.value.lastInteracted > 60000 }
+        val staleSessions = session.sessionMap.filter {
+            System.currentTimeMillis() - it.value.lastInteracted > MAX_AFK_TIME ||
+                    System.currentTimeMillis() - it.value.created > MAX_LIFETIME
+        }
         staleSessions.forEach {
             dockerService.deleteDocker(it.key)
             session.deleteSession(it.key)
