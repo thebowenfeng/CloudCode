@@ -9,6 +9,7 @@ class DockerBridge(val host: String, val port: Int, val containerId: String) {
     private val socket = Socket(host, port)
     private val output = socket.getOutputStream()
     private val input = socket.getInputStream()
+    var lastInteracted = System.currentTimeMillis()
 
     init {
         socket.soTimeout = 3000
@@ -20,15 +21,16 @@ class DockerBridge(val host: String, val port: Int, val containerId: String) {
         }else{
             output.write(msg.toByteArray())
         }
+        lastInteracted = System.currentTimeMillis()
     }
 
     fun receiveMsg(size: Int): String{
         val resp = ByteArray(size)
         input.read(resp, 0, size)
-        resp.filter {
+        lastInteracted = System.currentTimeMillis()
+        return String(resp.filter {
             it.toInt() != 0
-        }
-        return String(resp)
+        }.toByteArray())
     }
 
     fun dispose(){

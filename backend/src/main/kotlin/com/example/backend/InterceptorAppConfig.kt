@@ -9,9 +9,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableWebMvc
-@EnableScheduling
 class InterceptorAppConfig : WebMvcConfigurer  {
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(AuthorizationInterceptor()).addPathPatterns("api/**")
+        registry.addInterceptor(AuthorizationInterceptor()).addPathPatterns("/api/**")
     }
 }

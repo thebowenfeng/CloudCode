@@ -66,8 +66,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
 
         // Check in case a lot of containers were created in the meantime
         if (session.getSessionCount() == MAX_CONCURRENT_SESSION){
-            val deleteContainerReq = client(Request(Method.POST, "http://$host:4243/containers/$containerId/kill"))
-            if (deleteContainerReq.status.code != 204) throw Exception("Cannot kill container")
+            shutdownDocker(containerId)
             throw Exception("Limit reached on concurrent sessions. Max is $MAX_CONCURRENT_SESSION")
         }
 
@@ -80,12 +79,14 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
         session.getSession(userId).sendMsg(input)
     }
 
-    fun deleteDocker(userId: String){
-        val containerId = session.getSession(userId).containerId
-
+    fun shutdownDocker(containerId: String){
         val deleteContainerReq = client(Request(Method.POST, "http://$host:4243/containers/$containerId/kill"))
         if (deleteContainerReq.status.code != 204) throw Exception("Cannot kill container")
+    }
 
+    fun deleteDocker(userId: String){
+        val containerId = session.getSession(userId).containerId
+        shutdownDocker(containerId)
         session.deleteSession(userId)
     }
 }

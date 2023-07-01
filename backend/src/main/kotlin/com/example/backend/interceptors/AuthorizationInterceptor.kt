@@ -8,7 +8,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 @Component
 class AuthorizationInterceptor : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        println(request.authType)
+        println("test")
         return true
     }
 }
