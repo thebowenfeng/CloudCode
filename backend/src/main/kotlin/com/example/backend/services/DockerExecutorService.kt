@@ -33,7 +33,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
         if (nextAvailPort == -1) throw Exception("Cannot obtain available port for docker service")
 
         val imageName = when(language){
-            Language.IPYTHON -> "test:latest"
+            Language.IPYTHON -> "ipython:latest"
             else -> throw Exception("$language is not currently supported")
         }
 
