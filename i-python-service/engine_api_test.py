@@ -5,7 +5,7 @@ import requests
 HOST = "172.25.39.216"
 
 res = requests.post(f"http://{HOST}:4243/containers/create", json={
-    "Image": "test:latest",
+    "Image": "ipython:latest",
     "Cmd": ["10000"],
     "ExposedPorts": {
         "10000/tcp": {}
@@ -20,11 +20,12 @@ res = requests.post(f"http://{HOST}:4243/containers/create", json={
     }
 })
 
+print(res)
 container_id = res.json()["Id"]
 print(f"Container ID: {container_id}")
 
 res2 = requests.post(f"http://{HOST}:4243/containers/{container_id}/start")
 print(res2)
 
-#time.sleep(1)
-#print(requests.get("http://127.0.0.1:4243/containers/json").json())
+time.sleep(1)
+print(requests.get(f"http://{HOST}:4243/containers/json").json())

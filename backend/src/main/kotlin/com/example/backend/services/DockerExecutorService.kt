@@ -70,6 +70,16 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
             throw Exception("Limit reached on concurrent sessions. Max is $MAX_CONCURRENT_SESSION")
         }
 
+        // Try connecting for 5 seconds before giving up
+        val currTime = System.currentTimeMillis()
+        while(System.currentTimeMillis() - currTime <= 5000){
+            try {
+                session.createSession(userId, DockerBridge(host, nextAvailPort, containerId))
+                return
+            } catch(e: Exception){
+                continue
+            }
+        }
         session.createSession(userId, DockerBridge(host, nextAvailPort, containerId))
     }
 

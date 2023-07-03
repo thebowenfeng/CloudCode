@@ -1,17 +1,14 @@
 package com.example.backend.misc
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.PrintWriter
+import java.net.InetSocketAddress
 import java.net.Socket
 
-class DockerBridge(val host: String, val port: Int, val containerId: String) {
+class DockerBridge(host: String, val port: Int, val containerId: String) {
     private val socket = Socket(host, port)
     private val output = socket.getOutputStream()
     private val input = socket.getInputStream()
     val created = System.currentTimeMillis()
     var lastInteracted = System.currentTimeMillis()
-
     init {
         socket.soTimeout = 3000
     }
@@ -29,6 +26,10 @@ class DockerBridge(val host: String, val port: Int, val containerId: String) {
         val resp = ByteArray(size)
         input.read(resp, 0, size)
         lastInteracted = System.currentTimeMillis()
+        for (i in resp.indices) {
+            print("${resp[i]} ")
+        }
+        print("\n")
         return String(resp.filter {
             it.toInt() != 0
         }.toByteArray())

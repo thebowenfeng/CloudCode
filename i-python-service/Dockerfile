@@ -4,4 +4,5 @@ COPY . /runtime
 
 RUN pip install pexpect
 
+EXPOSE 9000
 ENTRYPOINT ["python3", "/runtime/server.py"]
