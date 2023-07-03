@@ -26,10 +26,6 @@ class DockerBridge(host: String, val port: Int, val containerId: String) {
         val resp = ByteArray(size)
         input.read(resp, 0, size)
         lastInteracted = System.currentTimeMillis()
-        for (i in resp.indices) {
-            print("${resp[i]} ")
-        }
-        print("\n")
         return String(resp.filter {
             it.toInt() != 0
         }.toByteArray())
