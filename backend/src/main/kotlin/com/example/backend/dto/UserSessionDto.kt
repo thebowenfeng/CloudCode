@@ -12,5 +12,7 @@ data class UserSessionDto (
         @JsonProperty("user_id")
         val userId: String,
         @JsonProperty("language")
-        val language: Language?
+        val language: Language?,
+        @JsonProperty("file_url")
+        val fileURL: String?
 )

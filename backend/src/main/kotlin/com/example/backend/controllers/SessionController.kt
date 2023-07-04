@@ -23,7 +23,7 @@ class SessionController (@Autowired private val dockerExecutor: DockerExecutorSe
         newUser.language ?: throw Exception("Language cannot be null")
         if (newUser.userId.isEmpty()) throw IllegalArgumentException("User ID cannot be length 0")
 
-        dockerExecutor.createDocker(newUser.userId, newUser.language)
+        dockerExecutor.createDocker(newUser.userId, newUser.language, newUser.fileURL)
         return ResponseEntity<Any>(HttpStatus.OK)
     }
 

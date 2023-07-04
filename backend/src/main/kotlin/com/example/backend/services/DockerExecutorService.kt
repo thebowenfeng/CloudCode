@@ -17,7 +17,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
     private val host: String = System.getenv("CODECLOUD_DOCKER_HOST")
     private val client: HttpHandler = ApacheClient()
 
-    fun createDocker(userId: String, language: Language){
+    fun createDocker(userId: String, language: Language, fileURL: String?){
         if (session.checkSessionExist(userId)) throw Exception("Close existing session before opening new one")
         if (session.getSessionCount() == MAX_CONCURRENT_SESSION)
             throw Exception("Limit reached on concurrent sessions. Max is $MAX_CONCURRENT_SESSION")
@@ -34,6 +34,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
 
         val imageName = when(language){
             Language.IPYTHON -> "ipython:latest"
+            Language.PYTHON -> "python:latest"
             else -> throw Exception("$language is not currently supported")
         }
 
@@ -42,7 +43,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
                 .header("content-type", "application/json")
                 .body("{\n" +
                         "    \"Image\": \"$imageName\",\n" +
-                        "    \"Cmd\": [\"$nextAvailPort\"],\n" +
+                        "    \"Cmd\": [\"$nextAvailPort\", \"$fileURL\"],\n" +
                         "    \"ExposedPorts\": {\n" +
                         "        \"$nextAvailPort/tcp\": {}\n" +
                         "    },\n" +
