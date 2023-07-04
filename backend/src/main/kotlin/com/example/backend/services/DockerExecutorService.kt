@@ -80,7 +80,14 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
                 continue
             }
         }
-        session.createSession(userId, DockerBridge(host, nextAvailPort, containerId))
+
+        // Gracefully exit if unable to establish connection with container
+        try {
+            session.createSession(userId, DockerBridge(host, nextAvailPort, containerId))
+        } catch (e: Exception){
+            shutdownDocker(containerId)
+            throw Exception("Unable to establish connection with container")
+        }
     }
 
     fun readDockerOutput(userId: String): String = session.getSession(userId).receiveMsg(1024)
@@ -91,7 +98,9 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
 
     fun shutdownDocker(containerId: String){
         val deleteContainerReq = client(Request(Method.POST, "http://$host:4243/containers/$containerId/kill"))
-        if (deleteContainerReq.status.code != 204) throw Exception("Cannot kill container")
+        // 409 means container is already killed
+        if (deleteContainerReq.status.code != 204 || deleteContainerReq.status.code != 409)
+            throw Exception("Cannot kill container")
     }
 
     fun deleteDocker(userId: String){
