@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 enum class Language{
         @JsonValue
-        IPYTHON, PYTHON
+        IPYTHON, PYTHON, C
 }
 
 data class UserSessionDto (

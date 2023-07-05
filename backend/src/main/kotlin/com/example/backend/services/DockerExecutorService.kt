@@ -35,7 +35,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
         val imageName = when(language){
             Language.IPYTHON -> "ipython:latest"
             Language.PYTHON -> "python:latest"
-            else -> throw Exception("$language is not currently supported")
+            Language.C -> "c:latest"
         }
 
         // Create container
