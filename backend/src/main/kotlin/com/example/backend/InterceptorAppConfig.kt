@@ -12,5 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class InterceptorAppConfig : WebMvcConfigurer  {
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(AuthorizationInterceptor()).addPathPatterns("/api/**")
+            .excludePathPatterns("/api/files/get")
     }
 }

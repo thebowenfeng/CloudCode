@@ -36,7 +36,7 @@ class DockerExecutorServiceTest @Autowired constructor(
     @Test
     fun `create docker container`(){
         val host: String = System.getenv("CODECLOUD_DOCKER_HOST")
-        dockerService.createDocker("test", Language.IPYTHON)
+        dockerService.createDocker("test", Language.IPYTHON, "")
         val containerId = session.getSession("test").containerId
         val getContainerResp = JSONArray(client(Request(Method.GET,"http://$host:4243/containers/json")).body.toString())
 
@@ -61,7 +61,7 @@ class DockerExecutorServiceTest @Autowired constructor(
     @Test
     fun `create two containers at once`(){
         val host: String = System.getenv("CODECLOUD_DOCKER_HOST")
-        dockerService.createDocker("test2", Language.IPYTHON)
+        dockerService.createDocker("test2", Language.IPYTHON, "")
         val containerId = session.getSession("test2").containerId
         val getContainerResp = JSONArray(client(Request(Method.GET,"http://$host:4243/containers/json")).body.toString())
 

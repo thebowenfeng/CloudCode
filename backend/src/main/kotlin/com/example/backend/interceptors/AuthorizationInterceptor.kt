@@ -7,8 +7,10 @@ import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
 class AuthorizationInterceptor : HandlerInterceptor {
+    private val apiKey = System.getenv("CODECLOUD_API_KEY")
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        println("test")
+        if (request.getHeader("Authorization") != "Bearer $apiKey")
+            throw Exception("Unauthorized request")
         return true
     }
 }

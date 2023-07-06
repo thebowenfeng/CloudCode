@@ -100,7 +100,7 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
     fun shutdownDocker(containerId: String){
         val deleteContainerReq = client(Request(Method.POST, "http://$host:4243/containers/$containerId/kill"))
         // 409 means container is already killed
-        if (deleteContainerReq.status.code != 204 || deleteContainerReq.status.code != 409)
+        if (!(deleteContainerReq.status.code == 204 || deleteContainerReq.status.code == 409))
             throw Exception("Cannot kill container")
     }
 
