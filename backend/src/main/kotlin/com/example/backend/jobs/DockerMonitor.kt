@@ -21,7 +21,7 @@ class DockerMonitor @Autowired constructor(
     private val host: String = System.getenv("CODECLOUD_DOCKER_HOST")
     private val MAX_AFK_TIME = 60000
     private val MAX_LIFETIME = 600000
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 5000)
     fun pruneSessions(){
         val listContainersReq = client(Request(Method.GET, "http://$host:4243/containers/json"))
         if (listContainersReq.status.code != 200){

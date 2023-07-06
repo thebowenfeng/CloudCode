@@ -10,6 +10,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.json.JSONObject
+import java.net.SocketTimeoutException
 
 @Service
 class DockerExecutorService (@Autowired private val session: UserSession) {
@@ -71,11 +72,13 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
             throw Exception("Limit reached on concurrent sessions. Max is $MAX_CONCURRENT_SESSION")
         }
 
+        val dockerBridge = DockerBridge(host, nextAvailPort, containerId)
+        session.createSession(userId, dockerBridge)
         // Try connecting for 5 seconds before giving up
         val currTime = System.currentTimeMillis()
         while(System.currentTimeMillis() - currTime <= 5000){
             try {
-                session.createSession(userId, DockerBridge(host, nextAvailPort, containerId))
+                dockerBridge.connect()
                 return
             } catch(e: Exception){
                 continue
@@ -84,14 +87,27 @@ class DockerExecutorService (@Autowired private val session: UserSession) {
 
         // Gracefully exit if unable to establish connection with container
         try {
-            session.createSession(userId, DockerBridge(host, nextAvailPort, containerId))
+            dockerBridge.connect()
         } catch (e: Exception){
             shutdownDocker(containerId)
             throw Exception("Unable to establish connection with container")
         }
     }
 
-    fun readDockerOutput(userId: String): String = session.getSession(userId).receiveMsg(1024)
+    fun readDockerOutput(userId: String): String {
+        val currTime = System.currentTimeMillis()
+        var res = ""
+
+        while (System.currentTimeMillis() - currTime < 3000){
+            try {
+                res += session.getSession(userId).receiveMsg(1024)
+            }catch (e: SocketTimeoutException){
+                return res
+            }
+        }
+
+        return res
+    }
 
     fun inputDocker(userId: String, input: String){
         session.getSession(userId).sendMsg(input)
