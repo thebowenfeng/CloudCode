@@ -6,8 +6,6 @@ import time
 import threading
 import os
 
-MAX_AFK_TIME = 10 # Maximum time a metrics worker can stop emitting heartbeat signals before it is assumed dead (seconds)
-
 app = Flask(__name__)
 r = redis.Redis(host="172.25.39.216", port=6379, decode_responses=True)
 if r.get("server_list") is None:
