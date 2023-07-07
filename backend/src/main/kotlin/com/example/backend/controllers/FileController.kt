@@ -25,9 +25,10 @@ class FileController(@Autowired private val files: Files) {
             .contentType(MediaType.APPLICATION_OCTET_STREAM).body(ByteArrayResource(files.getFile(userId)))
 
     @PostMapping("/add/{userId}")
-    fun addFile(request: HttpServletRequest, @PathVariable("userId") userId: String, @RequestBody file: MultipartFile){
+    fun addFile(request: HttpServletRequest, @PathVariable("userId") userId: String, @RequestBody file: MultipartFile): String{
         if (userId.isEmpty()) throw Exception("User ID cannot be empty")
 
         files.putFile(userId, file.bytes)
+        return "http://${request.getHeader("host")}/api/files/get?userId=${userId}"
     }
 }
